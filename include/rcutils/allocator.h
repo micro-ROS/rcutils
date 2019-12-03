@@ -106,6 +106,13 @@ RCUTILS_WARN_UNUSED
 rcutils_allocator_t
 rcutils_get_default_allocator(void);
 
+/// Return a pointer to the rcutils_allocator_t with default values.
+
+RCUTILS_PUBLIC
+RCUTILS_WARN_UNUSED
+rcutils_allocator_t *
+rcutils_get_default_allocator_pointer(void);
+
 /// Return true if the given allocator has non-null function pointers.
 /**
  * Will also return false if the allocator pointer is null.
