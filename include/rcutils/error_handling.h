@@ -39,14 +39,16 @@ extern "C"
 #include "rcutils/types/rcutils_ret.h"
 #include "rcutils/visibility_control.h"
 
-#ifdef __STDC_LIB_EXT1__
+#ifdef defined(__STDC_LIB_EXT1__) && !defined(RCUTILS_NO_FILESYSTEM)
 // Limit the buffer size in the `fwrite` call to give an upper bound to buffer overrun in the case
 // of non-null terminated `msg`.
 #define RCUTILS_SAFE_FWRITE_TO_STDERR(msg) \
   do {fwrite(msg, sizeof(char), strnlen_s(msg, 4096), stderr);} while (0)
-#else
+#elif !defined(RCUTILS_NO_FILESYSTEM)
 #define RCUTILS_SAFE_FWRITE_TO_STDERR(msg) \
   do {fwrite(msg, sizeof(char), strlen(msg), stderr);} while (0)
+#else 
+  #define RCUTILS_SAFE_FWRITE_TO_STDERR(msg)
 #endif
 
 // fixed constraints
@@ -197,8 +199,12 @@ rcutils_set_error_state(const char * error_string, const char * file, size_t lin
  *
  * \param[in] msg The error message to be set.
  */
+#ifdef RCUTILS_AVOID_DYNAMIC_ALLOCATION
+  #define RCUTILS_SET_ERROR_MSG(msg)
+#else
 #define RCUTILS_SET_ERROR_MSG(msg) \
   do {rcutils_set_error_state(msg, __FILE__, __LINE__);} while (0)
+#endif // RCUTILS_AVOID_DYNAMIC_ALLOCATION
 
 /// Set the error message using a format string and format arguments.
 /**
@@ -209,6 +215,9 @@ rcutils_set_error_state(const char * error_string, const char * file, size_t lin
  * \param[in] format_string The string to be used as the format of the error message.
  * \param[in] ... Arguments for the format string.
  */
+#ifdef RCUTILS_AVOID_DYNAMIC_ALLOCATION
+  #define RCUTILS_SET_ERROR_MSG_WITH_FORMAT_STRING(format_string, ...)
+#else
 #define RCUTILS_SET_ERROR_MSG_WITH_FORMAT_STRING(format_string, ...) \
   do { \
     char output_msg[RCUTILS_ERROR_MESSAGE_MAX_LENGTH]; \
@@ -219,6 +228,8 @@ rcutils_set_error_state(const char * error_string, const char * file, size_t lin
       RCUTILS_SET_ERROR_MSG(output_msg); \
     } \
   } while (0)
+#endif // RCUTILS_AVOID_DYNAMIC_ALLOCATION
+
 
 /// Return `true` if the error is set, otherwise `false`.
 RCUTILS_PUBLIC
