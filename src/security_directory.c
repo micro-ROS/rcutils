@@ -23,7 +23,11 @@
 # pragma clang diagnostic push
 # pragma clang diagnostic ignored "-Wembedded-directive"
 #endif
+
+#ifndef RCUTILS_NO_FILESYSTEM
 #include "tinydir/tinydir.h"
+#endif
+
 #ifdef __clang__
 # pragma clang diagnostic pop
 #endif
@@ -89,7 +93,11 @@ static bool get_best_matching_directory(
   const char * node_name,
   char * matched_name)
 {
-  size_t max_match_length = 0;
+#ifdef RCUTILS_NO_FILESYSTEM
+  RCUTILS_SET_ERROR_MSG("not available filesystem");
+  return false;
+#else
+size_t max_match_length = 0;
   tinydir_dir dir;
   if (NULL == base_dir || NULL == node_name || NULL == matched_name) {
     return false;
@@ -119,6 +127,7 @@ static bool get_best_matching_directory(
 cleanup:
   tinydir_close(&dir);
   return max_match_length > 0;
+#endif  // _RCUTILS_NO_FILESYSTEM
 }
 
 char * exact_match_lookup(
@@ -154,6 +163,10 @@ char * prefix_match_lookup(
   const char * ros_secure_root_env,
   const rcutils_allocator_t * allocator)
 {
+#ifdef RCUTILS_NO_FILESYSTEM
+  RCUTILS_SET_ERROR_MSG("not available filesystem");
+  return false;
+#else
   // Perform longest prefix match for the node's name in directory <root dir>/<namespace>.
   char * node_secure_root = NULL;
   char matched_dir[_TINYDIR_FILENAME_MAX] = {0};
@@ -171,6 +184,7 @@ char * prefix_match_lookup(
     allocator->deallocate(base_lookup_dir, allocator->state);
   }
   return node_secure_root;
+#endif  // _RCUTILS_NO_FILESYSTEM
 }
 
 char * rcutils_get_secure_root(
