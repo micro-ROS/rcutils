@@ -29,6 +29,15 @@ else()
   set(time_impl_c src/time_unix.c)
 endif()
 
+if(RCUTILS_NO_FILESYSTEM)
+  add_compile_options(-DRCUTILS_NO_FILESYSTEM=1)
+endif()
+
+
+if(RCUTILS_AVOID_DYNAMIC_ALLOCATION)
+  add_compile_options(-DRCUTILS_AVOID_DYNAMIC_ALLOCATION=1)
+endif()
+
 set(rcutils_sources
   src/allocator.c
   src/array_list.c
