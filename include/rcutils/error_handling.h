@@ -39,7 +39,7 @@ extern "C"
 #include "rcutils/types/rcutils_ret.h"
 #include "rcutils/visibility_control.h"
 
-#ifdef defined(__STDC_LIB_EXT1__) && !defined(RCUTILS_NO_FILESYSTEM)
+#if defined(__STDC_LIB_EXT1__) && !defined(RCUTILS_NO_FILESYSTEM)
 // Limit the buffer size in the `fwrite` call to give an upper bound to buffer overrun in the case
 // of non-null terminated `msg`.
 #define RCUTILS_SAFE_FWRITE_TO_STDERR(msg) \
