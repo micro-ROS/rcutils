@@ -33,10 +33,14 @@ if(RCUTILS_NO_FILESYSTEM)
   add_compile_options(-DRCUTILS_NO_FILESYSTEM=1)
 endif()
 
-
 if(RCUTILS_AVOID_DYNAMIC_ALLOCATION)
   add_compile_options(-DRCUTILS_AVOID_DYNAMIC_ALLOCATION=1)
 endif()
+
+configure_file (
+    "${PROJECT_SOURCE_DIR}/include/rcutils/error_handling.h.in"
+    "${PROJECT_BINARY_DIR}/include/rcutils/error_handling.h"
+)
 
 set(rcutils_sources
   src/allocator.c
@@ -99,7 +103,8 @@ add_custom_command(OUTPUT include/rcutils/logging_macros.h
   VERBATIM
 )
 list(APPEND rcutils_sources
-  include/rcutils/logging_macros.h)
+  include/rcutils/logging_macros.h
+  include/rcutils/error_handling.h)
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
 
 add_library(
