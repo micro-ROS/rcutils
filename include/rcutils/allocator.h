@@ -83,6 +83,21 @@ RCUTILS_WARN_UNUSED
 rcutils_allocator_t
 rcutils_get_zero_initialized_allocator(void);
 
+/// Set rcutils default allocators.
+/**
+ * <hr>
+ * Attribute          | Adherence
+ * ------------------ | -------------
+ * Allocates Memory   | No
+ * Thread-Safe        | Yes
+ * Uses Atomics       | No
+ * Lock-Free          | Yes
+ */
+RCUTILS_PUBLIC
+RCUTILS_WARN_UNUSED
+bool
+rcutils_set_default_allocator(rcutils_allocator_t * allocator);
+  
 /// Return a properly initialized rcutils_allocator_t with default values.
 /**
  * This defaults to:
@@ -105,13 +120,6 @@ RCUTILS_PUBLIC
 RCUTILS_WARN_UNUSED
 rcutils_allocator_t
 rcutils_get_default_allocator(void);
-
-/// Return a pointer to the rcutils_allocator_t with default values.
-
-RCUTILS_PUBLIC
-RCUTILS_WARN_UNUSED
-rcutils_allocator_t *
-rcutils_get_default_allocator_pointer(void);
 
 /// Return true if the given allocator has non-null function pointers.
 /**
