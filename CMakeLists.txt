@@ -134,6 +134,9 @@ if(BUILD_TESTING)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
   endif()
 
+  set(test_resources_dir_name "test/resources")
+  add_definitions(-DTEST_RESOURCES_DIRECTORY="${CMAKE_CURRENT_BINARY_DIR}/${test_resources_dir_name}")
+
   find_package(ament_cmake_gmock REQUIRED)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_cmake_pytest REQUIRED)
@@ -364,6 +367,17 @@ if(BUILD_TESTING)
   if(TARGET test_hash_map)
     target_link_libraries(test_hash_map ${PROJECT_NAME})
   endif()
+
+  rcutils_custom_add_gtest(test_security_directory
+    test/test_security_directory.cpp
+  )
+  if(TARGET test_security_directory)
+    target_link_libraries(test_security_directory ${PROJECT_NAME} osrf_testing_tools_cpp::memory_tools)
+  endif()
+
+  install(DIRECTORY ${test_resources_dir_name}
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+  )
 endif()
 
 ament_export_dependencies(ament_cmake)
