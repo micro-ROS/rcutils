@@ -38,6 +38,7 @@ extern "C"
 #include "rcutils/snprintf.h"
 #include "rcutils/types/rcutils_ret.h"
 #include "rcutils/visibility_control.h"
+#include "rcutils/configuration_flags.h"
 
 #if defined(__STDC_LIB_EXT1__) && !defined(RCUTILS_NO_FILESYSTEM)
 // Limit the buffer size in the `fwrite` call to give an upper bound to buffer overrun in the case

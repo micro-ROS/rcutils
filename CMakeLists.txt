@@ -112,6 +112,11 @@ target_compile_definitions(${PROJECT_NAME}
     $<$<BOOL:${RCUTILS_AVOID_DYNAMIC_ALLOCATION}>:RCUTILS_AVOID_DYNAMIC_ALLOCATION>
   )
 
+configure_file(
+    "${PROJECT_SOURCE_DIR}/include/rcutils/configuration_flags.h.in"
+    "${PROJECT_SOURCE_DIR}/include/rcutils/configuration_flags.h"
+)
+
 # Needed if pthread is used for thread local storage.
 if(IOS AND IOS_SDK_VERSION LESS 10.0)
   ament_export_libraries(pthread)
