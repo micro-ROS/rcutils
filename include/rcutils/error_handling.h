@@ -39,9 +39,6 @@ extern "C"
 #include "rcutils/types/rcutils_ret.h"
 #include "rcutils/visibility_control.h"
 
-#cmakedefine RCUTILS_NO_FILESYSTEM
-#cmakedefine RCUTILS_AVOID_DYNAMIC_ALLOCATION
-
 #if defined(__STDC_LIB_EXT1__) && !defined(RCUTILS_NO_FILESYSTEM)
 // Limit the buffer size in the `fwrite` call to give an upper bound to buffer overrun in the case
 // of non-null terminated `msg`.

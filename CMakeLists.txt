@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.5)
 
 project(rcutils)
 
+option(RCUTILS_NO_THREAD_SUPPORT "Disable thread support." OFF)
+option(RCUTILS_NO_FILESYSTEM "Disable filesystem usage." OFF)
+option(RCUTILS_AVOID_DYNAMIC_ALLOCATION "Disable dynamic allocations." OFF)
+
 # Default to C11
 if(NOT CMAKE_C_STANDARD)
   set(CMAKE_C_STANDARD 11)
@@ -28,27 +32,6 @@ if(WIN32)
 else()
   set(time_impl_c src/time_unix.c)
 endif()
-
-if(RCUTILS_NO_FILESYSTEM)
-  add_compile_options(-DRCUTILS_NO_FILESYSTEM=1)
-endif()
-
-if(RCUTILS_NO_THREAD_SUPPORT)
-  add_compile_options(-DRCUTILS_NO_THREAD_SUPPORT=1)
-endif()
-
-if(RCUTILS_AVOID_DYNAMIC_ALLOCATION)
-  add_compile_options(-DRCUTILS_AVOID_DYNAMIC_ALLOCATION=1)
-endif()
-
-# target_compile_definitions(${PROJECT_NAME} PRIVATE "RCUTILS_NO_FILESYSTEM") 
-# target_compile_definitions(${PROJECT_NAME} PRIVATE "RCUTILS_NO_THREAD_SUPPORT") 
-# target_compile_definitions(${PROJECT_NAME} PRIVATE "RCUTILS_AVOID_DYNAMIC_ALLOCATION") 
-
-configure_file (
-    "${PROJECT_SOURCE_DIR}/include/rcutils/error_handling.h.in"
-    "${PROJECT_BINARY_DIR}/include/rcutils/error_handling.h"
-)
 
 set(rcutils_sources
   src/allocator.c
@@ -111,8 +94,7 @@ add_custom_command(OUTPUT include/rcutils/logging_macros.h
   VERBATIM
 )
 list(APPEND rcutils_sources
-  include/rcutils/logging_macros.h
-  include/rcutils/error_handling.h)
+  include/rcutils/logging_macros.h)
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
 
 add_library(
@@ -121,7 +103,14 @@ add_library(
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
-target_compile_definitions(${PROJECT_NAME} PRIVATE "RCUTILS_BUILDING_DLL")
+target_compile_definitions(${PROJECT_NAME} 
+  PRIVATE 
+    RCUTILS_BUILDING_DLL
+  PUBLIC 
+    $<$<BOOL:${RCUTILS_NO_THREAD_SUPPORT}>:RCUTILS_NO_THREAD_SUPPORT>
+    $<$<BOOL:${RCUTILS_NO_FILESYSTEM}>:RCUTILS_NO_FILESYSTEM>
+    $<$<BOOL:${RCUTILS_AVOID_DYNAMIC_ALLOCATION}>:RCUTILS_AVOID_DYNAMIC_ALLOCATION>
+  )
 
 # Needed if pthread is used for thread local storage.
 if(IOS AND IOS_SDK_VERSION LESS 10.0)
