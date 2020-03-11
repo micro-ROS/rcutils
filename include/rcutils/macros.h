@@ -20,6 +20,8 @@ extern "C"
 {
 #endif
 
+#include "rcutils/configuration_flags.h"
+
 #ifndef _WIN32
 #define RCUTILS_WARN_UNUSED __attribute__((warn_unused_result))
 #else
@@ -28,7 +30,7 @@ extern "C"
 
 // Note: this block was migrated from rmw/macros.h
 // This block either sets RCUTILS_THREAD_LOCAL or RCUTILS_THREAD_LOCAL_PTHREAD.
-#if RCUTILS_NO_THREAD_SUPPORT
+#if defined(RCUTILS_NO_THREAD_SUPPORT)
     #define RCUTILS_THREAD_LOCAL
 #elif defined _WIN32 || defined __CYGWIN__
 // Windows or Cygwin

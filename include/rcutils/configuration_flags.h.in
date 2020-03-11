@@ -9,6 +9,7 @@ extern "C"
 
 #cmakedefine RCUTILS_NO_FILESYSTEM
 #cmakedefine RCUTILS_AVOID_DYNAMIC_ALLOCATION
+#cmakedefine RCUTILS_NO_THREAD_SUPPORT
 
 #ifdef __cplusplus
 }

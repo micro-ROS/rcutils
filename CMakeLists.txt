@@ -103,18 +103,11 @@ add_library(
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
-target_compile_definitions(${PROJECT_NAME} 
-  PRIVATE 
-    RCUTILS_BUILDING_DLL
-  PUBLIC 
-    $<$<BOOL:${RCUTILS_NO_THREAD_SUPPORT}>:RCUTILS_NO_THREAD_SUPPORT>
-    $<$<BOOL:${RCUTILS_NO_FILESYSTEM}>:RCUTILS_NO_FILESYSTEM>
-    $<$<BOOL:${RCUTILS_AVOID_DYNAMIC_ALLOCATION}>:RCUTILS_AVOID_DYNAMIC_ALLOCATION>
-  )
+target_compile_definitions(${PROJECT_NAME} PRIVATE "RCUTILS_BUILDING_DLL")
 
 configure_file(
     "${PROJECT_SOURCE_DIR}/include/rcutils/configuration_flags.h.in"
-    "${PROJECT_SOURCE_DIR}/include/rcutils/configuration_flags.h"
+    "${PROJECT_BINARY_DIR}/include/rcutils/configuration_flags.h"
 )
 
 # Needed if pthread is used for thread local storage.
