@@ -242,18 +242,22 @@ rcutils_get_error_string(void)
   return gtls_rcutils_error_string;
 }
 
+// void
+// rcutils_reset_error(void)
+// {
+//   gtls_rcutils_error_state = (const rcutils_error_state_t) {
+//     .message = {0}, .file = {0}, .line_number = 0
+//   };  // NOLINT(readability/braces)
+//   gtls_rcutils_error_string_is_formatted = false;
+//   gtls_rcutils_error_string = (const rcutils_error_string_t) {
+//     .str = "\0"
+//   };
+//   gtls_rcutils_error_is_set = false;
+// }
+
 void
 rcutils_reset_error(void)
-{
-  gtls_rcutils_error_state = (const rcutils_error_state_t) {
-    .message = {0}, .file = {0}, .line_number = 0
-  };  // NOLINT(readability/braces)
-  gtls_rcutils_error_string_is_formatted = false;
-  gtls_rcutils_error_string = (const rcutils_error_string_t) {
-    .str = "\0"
-  };
-  gtls_rcutils_error_is_set = false;
-}
+{}
 
 #ifdef __cplusplus
 }
