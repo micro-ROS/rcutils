@@ -24,6 +24,7 @@
 #include "rcutils/time.h"
 #include "rcutils/types/rcutils_ret.h"
 #include "rcutils/visibility_control.h"
+#include "rcutils/configuration_flags.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -539,22 +540,22 @@ void rcutils_logging_console_output_handler(
  * All logging macros ensure that this has been called once.
  */
 
+#ifdef RCUTILS_NO_LOGGING
 #define RCUTILS_LOGGING_AUTOINIT
-
-/**
-* #define RCUTILS_LOGGING_AUTOINIT \
-*   if (RCUTILS_UNLIKELY(!g_rcutils_logging_initialized)) { \
-*     rcutils_ret_t ret = rcutils_logging_initialize(); \
-*     if (ret != RCUTILS_RET_OK) { \
-*       RCUTILS_SAFE_FWRITE_TO_STDERR( \
-*         "[rcutils|" __FILE__ ":" RCUTILS_STRINGIFY(__LINE__) \
-*         "] error initializing logging: "); \
-*       RCUTILS_SAFE_FWRITE_TO_STDERR(rcutils_get_error_string().str); \
-*       RCUTILS_SAFE_FWRITE_TO_STDERR("\n"); \
-*       rcutils_reset_error(); \
-*     } \
-*   }
-*/
+#else
+#define RCUTILS_LOGGING_AUTOINIT \
+  if (RCUTILS_UNLIKELY(!g_rcutils_logging_initialized)) { \
+    rcutils_ret_t ret = rcutils_logging_initialize(); \
+    if (ret != RCUTILS_RET_OK) { \
+      RCUTILS_SAFE_FWRITE_TO_STDERR( \
+        "[rcutils|" __FILE__ ":" RCUTILS_STRINGIFY(__LINE__) \
+        "] error initializing logging: "); \
+      RCUTILS_SAFE_FWRITE_TO_STDERR(rcutils_get_error_string().str); \
+      RCUTILS_SAFE_FWRITE_TO_STDERR("\n"); \
+      rcutils_reset_error(); \
+    } \
+  }
+#endif // RCUTILS_NO_LOGGING
 
 #ifdef __cplusplus
 }

@@ -29,6 +29,7 @@ extern "C"
 #include <rcutils/allocator.h>
 #include <rcutils/macros.h>
 #include <rcutils/strdup.h>
+#include "rcutils/configuration_flags.h"
 
 // RCUTILS_REPORT_ERROR_HANDLING_ERRORS and RCUTILS_WARN_ON_TRUNCATION are set in the header below
 #include "./error_handling_helpers.h"
@@ -242,22 +243,20 @@ rcutils_get_error_string(void)
   return gtls_rcutils_error_string;
 }
 
-// void
-// rcutils_reset_error(void)
-// {
-//   gtls_rcutils_error_state = (const rcutils_error_state_t) {
-//     .message = {0}, .file = {0}, .line_number = 0
-//   };  // NOLINT(readability/braces)
-//   gtls_rcutils_error_string_is_formatted = false;
-//   gtls_rcutils_error_string = (const rcutils_error_string_t) {
-//     .str = "\0"
-//   };
-//   gtls_rcutils_error_is_set = false;
-// }
-
 void
 rcutils_reset_error(void)
-{}
+{
+#ifndef RCUTILS_NO_LOGGING
+  gtls_rcutils_error_state = (const rcutils_error_state_t) {
+    .message = {0}, .file = {0}, .line_number = 0
+  };  // NOLINT(readability/braces)
+  gtls_rcutils_error_string_is_formatted = false;
+  gtls_rcutils_error_string = (const rcutils_error_string_t) {
+    .str = "\0"
+  };
+  gtls_rcutils_error_is_set = false;
+#endif // RCUTILS_NO_LOGGING
+}
 
 #ifdef __cplusplus
 }

@@ -4,6 +4,7 @@ project(rcutils)
 
 option(RCUTILS_NO_THREAD_SUPPORT "Disable thread support." OFF)
 option(RCUTILS_NO_FILESYSTEM "Disable filesystem usage." OFF)
+option(RCUTILS_NO_LOGGING "Disable logging usage." OFF)
 option(RCUTILS_AVOID_DYNAMIC_ALLOCATION "Disable dynamic allocations." OFF)
 
 # Default to C11
