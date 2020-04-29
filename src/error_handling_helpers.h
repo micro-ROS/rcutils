@@ -39,6 +39,7 @@
 #include <string.h>
 
 #include <rcutils/error_handling.h>
+#include "rcutils/configuration_flags.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -140,6 +141,8 @@ __rcutils_format_error_string(
   rcutils_error_string_t * error_string,
   const rcutils_error_state_t * error_state)
 {
+#ifndef RCUTILS_NO_LOGGING
+  
   assert(error_string != NULL);
   assert(error_state != NULL);
   static const char format_1[] = ", at ";
@@ -173,6 +176,8 @@ __rcutils_format_error_string(
   written = __rcutils_copy_string(offset, bytes_left, line_number_buffer);
   offset += written;
   offset[0] = '\0';
+
+#endif // RCUTILS_NO_LOGGING
 }
 
 #ifdef __cplusplus

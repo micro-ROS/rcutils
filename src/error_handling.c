@@ -44,6 +44,7 @@ RCUTILS_THREAD_LOCAL bool gtls_rcutils_error_is_set = false;
 rcutils_ret_t
 rcutils_initialize_error_handling_thread_local_storage(rcutils_allocator_t allocator)
 {
+#ifndef RCUTILS_NO_LOGGING
   if (gtls_rcutils_thread_local_initialized) {
     return RCUTILS_RET_OK;
   }
@@ -72,6 +73,8 @@ rcutils_initialize_error_handling_thread_local_storage(rcutils_allocator_t alloc
   rcutils_reset_error();
 
   // at this point the thread-local allocator, error state, and error string are all initialized
+
+#endif // RCUTILS_NO_LOGGING
   return RCUTILS_RET_OK;
 }
 
@@ -91,6 +94,8 @@ __format_overwriting_error_state_message(
   size_t buffer_size,
   const rcutils_error_state_t * new_error_state)
 {
+
+#ifndef RCUTILS_NO_LOGGING
   assert(NULL != buffer);
   assert(0 != buffer_size);
   assert(INT64_MAX > buffer_size);
@@ -161,7 +166,10 @@ __format_overwriting_error_state_message(
   }
 #else
   (void)bytes_left;  // avoid scope could be reduced warning if in this case
-#endif
+#endif // RCUTILS_REPORT_ERROR_HANDLING_ERRORS
+
+#endif // RCUTILS_NO_LOGGING
+
 }
 
 void
@@ -170,6 +178,9 @@ rcutils_set_error_state(
   const char * file,
   size_t line_number)
 {
+
+#ifndef RCUTILS_NO_LOGGING
+
   rcutils_error_state_t error_state;
 
   if (NULL == error_string) {
@@ -216,6 +227,9 @@ rcutils_set_error_state(
     .str = "\0"
   };
   gtls_rcutils_error_is_set = true;
+  
+#endif // RCUTILS_NO_LOGGING
+
 }
 
 bool
@@ -233,6 +247,7 @@ rcutils_get_error_state(void)
 rcutils_error_string_t
 rcutils_get_error_string(void)
 {
+#ifndef RCUTILS_NO_LOGGING
   if (!gtls_rcutils_error_is_set) {
     return (rcutils_error_string_t) {"error not set"};  // NOLINT(readability/braces)
   }
@@ -241,6 +256,9 @@ rcutils_get_error_string(void)
     gtls_rcutils_error_string_is_formatted = true;
   }
   return gtls_rcutils_error_string;
+#else
+  return (rcutils_error_string_t) {"rcutils error handling disabled"};
+#endif // RCUTILS_NO_LOGGING
 }
 
 void

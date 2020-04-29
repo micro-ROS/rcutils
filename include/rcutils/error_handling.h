@@ -57,19 +57,33 @@ extern "C"
 #define RCUTILS_ERROR_FORMATTING_CHARACTERS 6  // ', at ' + ':'
 
 // max formatted string length
+#ifndef RCUTILS_NO_LOGGING
 #define RCUTILS_ERROR_MESSAGE_MAX_LENGTH 1024
+#else
+#define RCUTILS_ERROR_MESSAGE_MAX_LENGTH 1
+#endif //RCUTILS_NO_LOGGING
 
 // adjustable max length for user defined error message
 // remember "chained" errors will include previously specified file paths
 // e.g. "some error, at /path/to/a.c:42, at /path/to/b.c:42"
+#ifndef RCUTILS_NO_LOGGING
 #define RCUTILS_ERROR_STATE_MESSAGE_MAX_LENGTH 768
+#else
+#define RCUTILS_ERROR_STATE_MESSAGE_MAX_LENGTH 1
+#endif //RCUTILS_NO_LOGGING
 // with RCUTILS_ERROR_STATE_MESSAGE_MAX_LENGTH = 768, RCUTILS_ERROR_STATE_FILE_MAX_LENGTH == 229
+
+#ifndef RCUTILS_NO_LOGGING
 #define RCUTILS_ERROR_STATE_FILE_MAX_LENGTH ( \
     RCUTILS_ERROR_MESSAGE_MAX_LENGTH - \
     RCUTILS_ERROR_STATE_MESSAGE_MAX_LENGTH - \
     RCUTILS_ERROR_STATE_LINE_NUMBER_STR_MAX_LENGTH - \
     RCUTILS_ERROR_FORMATTING_CHARACTERS - \
     1)
+#else
+#define RCUTILS_ERROR_STATE_FILE_MAX_LENGTH 1
+#endif //RCUTILS_NO_LOGGING
+
 
 /// Struct wrapping a fixed-size c string used for returning the formatted error string.
 typedef struct rcutils_error_string_t
@@ -90,7 +104,7 @@ typedef struct rcutils_error_state_t
 } rcutils_error_state_t;
 
 // make sure our math is right...
-#if __STDC_VERSION__ >= 201112L
+#if __STDC_VERSION__ >= 201112L && !defined(RCUTILS_NO_LOGGING)
 static_assert(
   sizeof(rcutils_error_string_t) == (
     RCUTILS_ERROR_STATE_MESSAGE_MAX_LENGTH +

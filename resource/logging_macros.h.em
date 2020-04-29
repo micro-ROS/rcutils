@@ -69,6 +69,7 @@ extern "C"
  * \param name The name of the logger
  * \param ... The format string, followed by the variable arguments for the format string
  */
+#ifdef RCUTILS_NO_LOGGING
 #define RCUTILS_LOG_COND_NAMED(severity, condition_before, condition_after, name, ...) \
   do { \
     RCUTILS_LOGGING_AUTOINIT \
@@ -79,6 +80,9 @@ extern "C"
       condition_after \
     } \
   } while (0)
+#else
+#define RCUTILS_LOG_COND_NAMED(severity, condition_before, condition_after, name, ...)
+#endif //RCUTILS_NO_LOGGING
 
 ///@@{
 /**
