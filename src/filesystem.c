@@ -22,7 +22,9 @@ extern "C"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef RCUTILS_NO_FILESYSTEM
 #include <sys/stat.h>
+#endif
 #ifndef _WIN32
 #include <dirent.h>
 #include <unistd.h>
@@ -33,6 +35,7 @@ extern "C"
 
 #include "rcutils/format_string.h"
 #include "rcutils/repl_str.h"
+#include "rcutils/error_handling.h"
 
 #ifdef _WIN32
 # define RCUTILS_PATH_DELIMITER "\\"
@@ -43,6 +46,10 @@ extern "C"
 bool
 rcutils_get_cwd(char * buffer, size_t max_length)
 {
+#ifdef RCUTILS_NO_FILESYSTEM
+  RCUTILS_SET_ERROR_MSG("not available filesystem");
+  return false;
+#else
   if (NULL == buffer || max_length == 0) {
     return false;
   }
@@ -56,11 +63,16 @@ rcutils_get_cwd(char * buffer, size_t max_length)
   }
 #endif  // _WIN32
   return true;
+#endif  // _RCUTILS_NO_FILESYSTEM
 }
 
 bool
 rcutils_is_directory(const char * abs_path)
 {
+#ifdef RCUTILS_NO_FILESYSTEM
+  RCUTILS_SET_ERROR_MSG("not available filesystem");
+  return false;
+#else
   struct stat buf;
   if (stat(abs_path, &buf) < 0) {
     return false;
@@ -70,11 +82,16 @@ rcutils_is_directory(const char * abs_path)
 #else
   return S_ISDIR(buf.st_mode);
 #endif  // _WIN32
+#endif  // _RCUTILS_NO_FILESYSTEM
 }
 
 bool
 rcutils_is_file(const char * abs_path)
 {
+#ifdef RCUTILS_NO_FILESYSTEM
+  RCUTILS_SET_ERROR_MSG("not available filesystem");
+  return false;
+#else
   struct stat buf;
   if (stat(abs_path, &buf) < 0) {
     return false;
@@ -84,21 +101,31 @@ rcutils_is_file(const char * abs_path)
 #else
   return S_ISREG(buf.st_mode);
 #endif  // _WIN32
+#endif  // _RCUTILS_NO_FILESYSTEM
 }
 
 bool
 rcutils_exists(const char * abs_path)
 {
+#ifdef RCUTILS_NO_FILESYSTEM
+  RCUTILS_SET_ERROR_MSG("not available filesystem");
+  return false;
+#else
   struct stat buf;
   if (stat(abs_path, &buf) < 0) {
     return false;
   }
   return true;
+#endif  // _RCUTILS_NO_FILESYSTEM
 }
 
 bool
 rcutils_is_readable(const char * abs_path)
 {
+#ifdef RCUTILS_NO_FILESYSTEM
+  RCUTILS_SET_ERROR_MSG("not available filesystem");
+  return false;
+#else
   struct stat buf;
   if (stat(abs_path, &buf) < 0) {
     return false;
@@ -111,11 +138,16 @@ rcutils_is_readable(const char * abs_path)
     return false;
   }
   return true;
+#endif  // _RCUTILS_NO_FILESYSTEM
 }
 
 bool
 rcutils_is_writable(const char * abs_path)
 {
+#ifdef RCUTILS_NO_FILESYSTEM
+  RCUTILS_SET_ERROR_MSG("not available filesystem");
+  return false;
+#else
   struct stat buf;
   if (stat(abs_path, &buf) < 0) {
     return false;
@@ -128,11 +160,16 @@ rcutils_is_writable(const char * abs_path)
     return false;
   }
   return true;
+#endif  // _RCUTILS_NO_FILESYSTEM
 }
 
 bool
 rcutils_is_readable_and_writable(const char * abs_path)
 {
+#ifdef RCUTILS_NO_FILESYSTEM
+  RCUTILS_SET_ERROR_MSG("not available filesystem");
+  return false;
+#else
   struct stat buf;
   if (stat(abs_path, &buf) < 0) {
     return false;
@@ -147,6 +184,7 @@ rcutils_is_readable_and_writable(const char * abs_path)
     return false;
   }
   return true;
+#endif  // _RCUTILS_NO_FILESYSTEM
 }
 
 char *

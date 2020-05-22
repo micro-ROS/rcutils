@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.5)
 
 project(rcutils)
 
+option(RCUTILS_NO_THREAD_SUPPORT "Disable thread support." OFF)
+option(RCUTILS_NO_FILESYSTEM "Disable filesystem usage." OFF)
+option(RCUTILS_AVOID_DYNAMIC_ALLOCATION "Disable dynamic allocations." OFF)
+
 # Default to C11
 if(NOT CMAKE_C_STANDARD)
   set(CMAKE_C_STANDARD 11)
@@ -15,6 +19,7 @@ include(CheckLibraryExists)
 
 find_package(ament_cmake_python REQUIRED)
 find_package(ament_cmake_ros REQUIRED)
+find_package(tinydir_vendor REQUIRED)
 
 ament_python_install_package(${PROJECT_NAME})
 
@@ -53,7 +58,9 @@ set(rcutils_sources
   src/time.c
   ${time_impl_c}
   src/uint8_array.c
+  src/security_directory.c
 )
+
 set_source_files_properties(
   ${rcutils_sources}
   PROPERTIES language "C")
@@ -91,6 +98,7 @@ add_custom_command(OUTPUT include/rcutils/logging_macros.h
 )
 list(APPEND rcutils_sources
   include/rcutils/logging_macros.h)
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
 
 add_library(
   ${PROJECT_NAME}
@@ -104,6 +112,11 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 # which is appropriate when building the dll but not consuming it.
 target_compile_definitions(${PROJECT_NAME} PRIVATE "RCUTILS_BUILDING_DLL")
 
+configure_file(
+    "${PROJECT_SOURCE_DIR}/include/rcutils/configuration_flags.h.in"
+    "${PROJECT_BINARY_DIR}/include/rcutils/configuration_flags.h"
+)
+
 target_link_libraries(${PROJECT_NAME} ${CMAKE_DL_LIBS})
 
 # Needed if pthread is used for thread local storage.
@@ -116,10 +129,17 @@ install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
 
+ament_target_dependencies(${PROJECT_NAME}
+  "tinydir_vendor"
+)
+
 if(BUILD_TESTING)
   if(NOT WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
   endif()
+
+  set(test_resources_dir_name "test/resources")
+  add_definitions(-DTEST_RESOURCES_DIRECTORY="${CMAKE_CURRENT_BINARY_DIR}/${test_resources_dir_name}")
 
   find_package(ament_cmake_gmock REQUIRED)
   find_package(ament_cmake_gtest REQUIRED)
@@ -428,6 +448,16 @@ if(BUILD_TESTING)
   endif()
 
 
+  rcutils_custom_add_gtest(test_security_directory
+    test/test_security_directory.cpp
+  )
+  if(TARGET test_security_directory)
+    target_link_libraries(test_security_directory ${PROJECT_NAME} osrf_testing_tools_cpp::memory_tools)
+  endif()
+
+  install(DIRECTORY ${test_resources_dir_name}
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+  )
 endif()
 
 ament_export_dependencies(ament_cmake)
