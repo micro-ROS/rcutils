@@ -253,6 +253,12 @@ rcutils_mkdir(const char * abs_path)
 size_t
 rcutils_calculate_directory_size(const char * directory_path, rcutils_allocator_t allocator)
 {
+
+#ifdef RCUTILS_NO_FILESYSTEM
+  RCUTILS_SET_ERROR_MSG("not available filesystem");
+  return 0;
+#else
+
   size_t dir_size = 0;
 
   if (!rcutils_is_directory(directory_path)) {
@@ -298,6 +304,8 @@ rcutils_calculate_directory_size(const char * directory_path, rcutils_allocator_
   closedir(dir);
   return dir_size;
 #endif
+
+#endif  // _RCUTILS_NO_FILESYSTEM
 }
 
 size_t

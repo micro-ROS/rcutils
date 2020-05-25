@@ -19,12 +19,18 @@ extern "C"
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "rcutils/configuration_flags.h"
+
+#ifndef RCUTILS_NO_FILESYSTEM
+
 #ifndef _WIN32
 #include <dlfcn.h>
 #else
 #include <windows.h>
 C_ASSERT(sizeof(void *) == sizeof(HINSTANCE));
 #endif  // _WIN32
+
+#endif //RCUTILS_NO_FILESYSTEM
 
 #include "rcutils/error_handling.h"
 #include "rcutils/shared_library.h"
@@ -45,7 +51,10 @@ rcutils_load_shared_library(
   rcutils_shared_library_t * lib,
   const char * library_path,
   rcutils_allocator_t allocator)
-{
+{ 
+
+#ifndef RCUTILS_NO_FILESYSTEM
+
   RCUTILS_CHECK_ARGUMENT_FOR_NULL(lib, RCUTILS_RET_INVALID_ARGUMENT);
   RCUTILS_CHECK_ARGUMENT_FOR_NULL(library_path, RCUTILS_RET_INVALID_ARGUMENT);
   RCUTILS_CHECK_ALLOCATOR(&allocator, return RCUTILS_RET_INVALID_ARGUMENT);
@@ -76,6 +85,11 @@ rcutils_load_shared_library(
     return RCUTILS_RET_ERROR;
   }
   return RCUTILS_RET_OK;
+
+#else
+  return RCUTILS_RET_ERROR;
+#endif //RCUTILS_NO_FILESYSTEM
+
 }
 
 void *
