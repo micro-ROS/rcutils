@@ -26,7 +26,9 @@ extern "C"
 #include <sys/stat.h>
 #endif
 #ifndef _WIN32
+#ifndef RCUTILS_NO_FILESYSTEM
 #include <dirent.h>
+#endif
 #include <unistd.h>
 #else
 #include <windows.h>
@@ -311,6 +313,11 @@ rcutils_calculate_directory_size(const char * directory_path, rcutils_allocator_
 size_t
 rcutils_get_file_size(const char * file_path)
 {
+
+#ifdef RCUTILS_NO_FILESYSTEM
+  RCUTILS_SET_ERROR_MSG("not available filesystem");
+  return 0;
+#else
   if (!rcutils_is_file(file_path)) {
     fprintf(stderr, "Path is not a file: %s\n", file_path);
     return 0;
@@ -319,6 +326,7 @@ rcutils_get_file_size(const char * file_path)
   struct stat stat_buffer;
   int rc = stat(file_path, &stat_buffer);
   return rc == 0 ? (size_t)(stat_buffer.st_size) : 0;
+#endif  // _RCUTILS_NO_FILESYSTEM
 }
 
 #ifdef __cplusplus
