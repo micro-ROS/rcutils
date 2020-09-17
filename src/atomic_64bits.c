@@ -20,15 +20,20 @@ extern "C"
 #include <stdint.h>
 #include <stdbool.h>
 
-#define FLAGS_LEN	16
+#define FLAGS_LEN	23
 
 static bool * get_memory_lock(void *addr)
 {
   static bool memory_locks[FLAGS_LEN] = { 0 };
+  uintptr_t a = (uintptr_t)(addr);
+  a = (a ^ 61) ^ (a >> 16);
+  a = a + (a << 3);
+  a = a ^ (a >> 4);
+  a = a * 0x27d4eb2d;
+  a = a ^ (a >> 15);
 
-  // Implement here a randomization function based on addr
-
-  return memory_locks;
+  a = a % FLAGS_LEN;
+  return memory_locks + a;
 }
 
 void lock_memory(uint64_t *mem){
