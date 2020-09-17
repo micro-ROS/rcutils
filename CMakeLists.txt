@@ -5,6 +5,7 @@ project(rcutils)
 option(RCUTILS_NO_THREAD_SUPPORT "Disable thread support." OFF)
 option(RCUTILS_NO_FILESYSTEM "Disable filesystem usage." OFF)
 option(RCUTILS_AVOID_DYNAMIC_ALLOCATION "Disable dynamic allocations." OFF)
+option(RCUTILS_NO_64_ATOMIC "Disable support for 64 bits atomic operations." OFF)
 
 # Default to C11
 if(NOT CMAKE_C_STANDARD)
@@ -74,6 +75,7 @@ set(rcutils_sources
   src/time.c
   ${time_impl_c}
   src/uint8_array.c
+  $<$<BOOL:${RCUTILS_NO_64_ATOMIC}>:src/atomic_64bits.c>
 )
 
 set_source_files_properties(
