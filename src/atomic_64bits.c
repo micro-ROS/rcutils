@@ -22,10 +22,12 @@ extern "C"
 
 #define FLAGS_LEN	23
 
-static bool * get_memory_lock(void *addr)
+static bool * get_memory_lock(void *address)
 {
   static bool memory_locks[FLAGS_LEN] = { 0 };
-  uintptr_t a = (uintptr_t)(addr);
+  uintptr_t a = (uintptr_t)(address);
+
+  // Public domain hash function taken from http://burtleburtle.net/bob/hash/integer.html
   a = (a ^ 61) ^ (a >> 16);
   a = a + (a << 3);
   a = a ^ (a >> 4);
@@ -36,14 +38,14 @@ static bool * get_memory_lock(void *addr)
   return memory_locks + a;
 }
 
-void lock_memory(uint64_t *mem){
-  bool * memory_lock = get_memory_lock(mem);
+void lock_memory(uint64_t *address){
+  bool * memory_lock = get_memory_lock(address);
 
   while (__atomic_test_and_set(memory_lock, __ATOMIC_ACQUIRE) == 1);
 }
 
-void unlock_memory(uint64_t *mem){
-  bool * memory_lock = get_memory_lock(mem);
+void unlock_memory(uint64_t *address){
+  bool * memory_lock = get_memory_lock(address);
 
   __atomic_clear(memory_lock, __ATOMIC_RELEASE);
 }
