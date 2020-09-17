@@ -74,7 +74,6 @@ set(rcutils_sources
   src/time.c
   ${time_impl_c}
   src/uint8_array.c
-  src/security_directory.c
 )
 
 set_source_files_properties(
@@ -156,9 +155,6 @@ if(BUILD_TESTING)
   if(NOT WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
   endif()
-
-  set(test_resources_dir_name "test/resources")
-  add_definitions(-DTEST_RESOURCES_DIRECTORY="${CMAKE_CURRENT_BINARY_DIR}/${test_resources_dir_name}")
 
   find_package(ament_cmake_gmock REQUIRED)
   find_package(ament_cmake_gtest REQUIRED)
