@@ -14,7 +14,7 @@ jobs:
         strategy:
           fail-fast: false
           matrix:
-            branches: [foxy, master]
+            branches: [foxy, galactic, master]
         steps:
           - name: Check
             id: check
