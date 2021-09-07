@@ -60,6 +60,8 @@ bool
 rcutils_get_cwd(char * buffer, size_t max_length)
 {
 #ifdef RCUTILS_NO_FILESYSTEM
+  (void) buffer;
+  (void) max_length;
   RCUTILS_SET_ERROR_MSG("not available filesystem");
   return false;
 #else
@@ -83,6 +85,7 @@ bool
 rcutils_is_directory(const char * abs_path)
 {
 #ifdef RCUTILS_NO_FILESYSTEM
+  (void) abs_path;
   RCUTILS_SET_ERROR_MSG("not available filesystem");
   return false;
 #else
@@ -102,6 +105,7 @@ bool
 rcutils_is_file(const char * abs_path)
 {
 #ifdef RCUTILS_NO_FILESYSTEM
+  (void) abs_path;
   RCUTILS_SET_ERROR_MSG("not available filesystem");
   return false;
 #else
@@ -121,6 +125,7 @@ bool
 rcutils_exists(const char * abs_path)
 {
 #ifdef RCUTILS_NO_FILESYSTEM
+  (void) abs_path;
   RCUTILS_SET_ERROR_MSG("not available filesystem");
   return false;
 #else
@@ -136,6 +141,7 @@ bool
 rcutils_is_readable(const char * abs_path)
 {
 #ifdef RCUTILS_NO_FILESYSTEM
+  (void) abs_path;
   RCUTILS_SET_ERROR_MSG("not available filesystem");
   return false;
 #else
@@ -158,6 +164,7 @@ bool
 rcutils_is_writable(const char * abs_path)
 {
 #ifdef RCUTILS_NO_FILESYSTEM
+  (void) abs_path;
   RCUTILS_SET_ERROR_MSG("not available filesystem");
   return false;
 #else
@@ -180,6 +187,7 @@ bool
 rcutils_is_readable_and_writable(const char * abs_path)
 {
 #ifdef RCUTILS_NO_FILESYSTEM
+  (void) abs_path;
   RCUTILS_SET_ERROR_MSG("not available filesystem");
   return false;
 #else
@@ -206,6 +214,13 @@ rcutils_join_path(
   const char * right_hand_path,
   rcutils_allocator_t allocator)
 {
+#ifdef RCUTILS_NO_FILESYSTEM
+  (void) left_hand_path;
+  (void) right_hand_path;
+  (void) allocator;
+  RCUTILS_SET_ERROR_MSG("not available filesystem");
+  return NULL;
+#else
   if (NULL == left_hand_path) {
     return NULL;
   }
@@ -217,6 +232,7 @@ rcutils_join_path(
     allocator,
     "%s%s%s",
     left_hand_path, RCUTILS_PATH_DELIMITER, right_hand_path);
+#endif  // _RCUTILS_NO_FILESYSTEM
 }
 
 char *
@@ -224,16 +240,28 @@ rcutils_to_native_path(
   const char * path,
   rcutils_allocator_t allocator)
 {
+#ifdef RCUTILS_NO_FILESYSTEM
+  (void) path;
+  (void) allocator;
+  RCUTILS_SET_ERROR_MSG("not available filesystem");
+  return NULL;
+#else
   if (NULL == path) {
     return NULL;
   }
 
   return rcutils_repl_str(path, "/", RCUTILS_PATH_DELIMITER, &allocator);
+#endif  // _RCUTILS_NO_FILESYSTEM
 }
 
 bool
 rcutils_mkdir(const char * abs_path)
 {
+#ifdef RCUTILS_NO_FILESYSTEM
+  (void) abs_path;
+  RCUTILS_SET_ERROR_MSG("not available filesystem");
+  return false;
+#else
   if (NULL == abs_path) {
     return false;
   }
@@ -261,6 +289,7 @@ rcutils_mkdir(const char * abs_path)
   }
 
   return success;
+#endif  // _RCUTILS_NO_FILESYSTEM
 }
 
 size_t
@@ -268,6 +297,8 @@ rcutils_calculate_directory_size(const char * directory_path, rcutils_allocator_
 {
 
 #ifdef RCUTILS_NO_FILESYSTEM
+  (void) directory_path;
+  (void) allocator;
   RCUTILS_SET_ERROR_MSG("not available filesystem");
   return 0;
 #else
@@ -326,6 +357,7 @@ rcutils_get_file_size(const char * file_path)
 {
 
 #ifdef RCUTILS_NO_FILESYSTEM
+  (void) file_path;
   RCUTILS_SET_ERROR_MSG("not available filesystem");
   return 0;
 #else

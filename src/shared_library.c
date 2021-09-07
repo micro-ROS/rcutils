@@ -101,6 +101,9 @@ rcutils_load_shared_library(
   return RCUTILS_RET_OK;
 
 #else
+  (void) lib;
+  (void) library_path;
+  (void) allocator;
   return RCUTILS_RET_ERROR;
 #endif //RCUTILS_NO_FILESYSTEM
 
