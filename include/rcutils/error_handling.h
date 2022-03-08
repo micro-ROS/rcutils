@@ -53,37 +53,9 @@ extern "C"
   #define RCUTILS_SAFE_FWRITE_TO_STDERR(msg)
 #endif
 
-<<<<<<< HEAD
 // fixed constraints
-=======
-/// Set the error message to stderr using a format string and format arguments.
-/**
- * This function sets the error message to stderr using the given format string.
- * The resulting formatted string is silently truncated at
- * RCUTILS_ERROR_MESSAGE_MAX_LENGTH.
- *
- * \param[in] format_string The string to be used as the format of the error message.
- * \param[in] ... Arguments for the format string.
- */
-
-#if !defined(RCUTILS_AVOID_DYNAMIC_ALLOCATION)
-#define RCUTILS_SAFE_FWRITE_TO_STDERR_WITH_FORMAT_STRING(format_string, ...) \
-  do { \
-    char output_msg[RCUTILS_ERROR_MESSAGE_MAX_LENGTH]; \
-    int ret = rcutils_snprintf(output_msg, sizeof(output_msg), format_string, __VA_ARGS__); \
-    if (ret < 0) { \
-      RCUTILS_SAFE_FWRITE_TO_STDERR("Failed to call snprintf for error message formatting\n"); \
-    } else { \
-      RCUTILS_SAFE_FWRITE_TO_STDERR(output_msg); \
-    } \
-  } while (0)
-#else
-#define RCUTILS_SAFE_FWRITE_TO_STDERR_WITH_FORMAT_STRING(format_string, ...)
-#endif
-
 #if !defined(RCUTILS_AVOID_DYNAMIC_ALLOCATION)
 /// The maximum length a formatted number is allowed to have.
->>>>>>> 1176652 (Reduce error handling static size (#14))
 #define RCUTILS_ERROR_STATE_LINE_NUMBER_STR_MAX_LENGTH 20  // "18446744073709551615"
 #define RCUTILS_ERROR_FORMATTING_CHARACTERS 6  // ', at ' + ':'
 
