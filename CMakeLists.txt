@@ -5,12 +5,7 @@ project(rcutils)
 option(RCUTILS_NO_THREAD_SUPPORT "Disable thread support." OFF)
 option(RCUTILS_NO_FILESYSTEM "Disable filesystem usage." OFF)
 option(RCUTILS_AVOID_DYNAMIC_ALLOCATION "Disable dynamic allocations." OFF)
-<<<<<<< HEAD
-option(RCUTILS_NO_64_ATOMIC "Disable support for 64 bits atomic operations." OFF)
-=======
 option(RCUTILS_NO_64_ATOMIC "Enable alternative support for 64 bits atomic operations in platforms with no native support." OFF)
-option(RCUTILS_MICROROS "Flag for building micro-ROS." ON)
->>>>>>> 85efa4a (Fix atomic 64 b description (#17))
 
 # Default to C11
 if(NOT CMAKE_C_STANDARD)
