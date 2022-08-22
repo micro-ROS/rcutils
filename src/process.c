@@ -62,6 +62,7 @@ char * rcutils_get_executable_name(rcutils_allocator_t allocator)
   const char * appname = getprogname();
 #elif defined __GNUC__ && !defined(__QNXNTO__)
   #if defined __linux__ || defined __linux || defined __gnu_linux__ || defined linux
+    extern char *program_invocation_name;
     const char * appname = program_invocation_name;
   #else
     // Some embedded OS compile with __GNUC__ but are not quite conformant with GNU-specific extensions.
