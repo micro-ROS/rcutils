@@ -30,7 +30,12 @@ extern "C"
 #include <math.h>
 
 #if defined(__ZEPHYR__)
-#include <posix/time.h>  //  Points to Zephyr toolchain posix time implementation
+// Points to Zephyr toolchain posix time implementation
+#if KERNEL_VERSION_MAJOR >= 3
+#include <zephyr/posix/time.h>
+#else
+#include <posix/time.h>
+#endif
 #else
 #include <time.h>
 #endif  //  defined(__ZEPHYR__)
