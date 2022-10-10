@@ -99,9 +99,7 @@ rcutils_steady_time_now(rcutils_time_point_value_t * now)
   timespec_now.tv_nsec = mts.tv_nsec;
 #else  // defined(__MACH__)
   // Otherwise use clock_gettime.
-#if defined(CLOCK_REALTIME)
-  clock_gettime(CLOCK_REALTIME, &timespec_now);
-#elif defined(CLOCK_MONOTONIC_RAW) // defined(CLOCK_REALTIME)
+#if defined(CLOCK_MONOTONIC_RAW)
   clock_gettime(CLOCK_MONOTONIC_RAW, &timespec_now);
 #else  // defined(CLOCK_MONOTONIC_RAW)
   clock_gettime(CLOCK_MONOTONIC, &timespec_now);
