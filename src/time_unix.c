@@ -30,11 +30,17 @@ extern "C"
 #include <math.h>
 
 #if defined(__ZEPHYR__)
-#include <posix/time.h>  //  Points to Zephyr toolchain posix time implementation
+#if ZEPHYR_VERSION_CODE >= ZEPHYR_VERSION(3,1,0)
+#include <zephyr/posix/time.h> //  Points to Zephyr toolchain posix time implementation
+#include <zephyr/posix/unistd.h>
+#else
+#include <posix/time.h>
+#include <posix/unistd.h>
+#endif
 #else
 #include <time.h>
-#endif  //  defined(__ZEPHYR__)
 #include <unistd.h>
+#endif  //  defined(__ZEPHYR__)
 
 #include "./common.h"
 #include "rcutils/allocator.h"
@@ -93,7 +99,9 @@ rcutils_steady_time_now(rcutils_time_point_value_t * now)
   timespec_now.tv_nsec = mts.tv_nsec;
 #else  // defined(__MACH__)
   // Otherwise use clock_gettime.
-#if defined(CLOCK_MONOTONIC_RAW)
+#if defined(CLOCK_REALTIME)
+  clock_gettime(CLOCK_REALTIME, &timespec_now);
+#elif defined(CLOCK_MONOTONIC_RAW) // defined(CLOCK_REALTIME)
   clock_gettime(CLOCK_MONOTONIC_RAW, &timespec_now);
 #else  // defined(CLOCK_MONOTONIC_RAW)
   clock_gettime(CLOCK_MONOTONIC, &timespec_now);
