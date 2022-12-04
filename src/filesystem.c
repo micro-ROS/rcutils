@@ -46,9 +46,9 @@ extern "C"
 #include <direct.h>
 #endif  // _WIN32
 
+#include "rcutils/env.h"
 #include "rcutils/error_handling.h"
 #include "rcutils/format_string.h"
-#include "rcutils/get_env.h"
 #include "rcutils/repl_str.h"
 #include "rcutils/strdup.h"
 
@@ -59,7 +59,9 @@ extern "C"
 #endif  // _WIN32
 
 #ifdef RCUTILS_NO_FILESYSTEM
-typedef int DIR;
+#ifndef __INCLUDE_DIRENT_H
+  typedef int DIR;
+#endif
 #endif  // _RCUTILS_NO_FILESYSTEM
 typedef struct rcutils_dir_iter_state_t
 {
@@ -70,7 +72,7 @@ typedef struct rcutils_dir_iter_state_t
   DIR * dir;
 #endif
 } rcutils_dir_iter_state_t;
-
+ 
 bool
 rcutils_get_cwd(char * buffer, size_t max_length)
 {
