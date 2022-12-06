@@ -59,9 +59,7 @@ extern "C"
 #endif  // _WIN32
 
 #ifdef RCUTILS_NO_FILESYSTEM
-#ifndef __NuttX__
   typedef int DIR;
-#endif
 #endif  // _RCUTILS_NO_FILESYSTEM
 typedef struct rcutils_dir_iter_state_t
 {
