@@ -59,7 +59,7 @@ extern "C"
 #endif  // _WIN32
 
 #ifdef RCUTILS_NO_FILESYSTEM
-#ifndef __NuttX__
+#ifndef __INCLUDE_DIRENT_H
   typedef int DIR;
 #endif
 #endif  // _RCUTILS_NO_FILESYSTEM
