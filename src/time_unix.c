@@ -28,7 +28,17 @@ extern "C"
 #include <mach/mach.h>
 #endif  // defined(__MACH__)
 #include <math.h>
+
+#if defined(__ZEPHYR__)
+#include <version.h>
+#if ZEPHYR_VERSION_CODE >= ZEPHYR_VERSION(3, 1, 0)
+#include <zephyr/posix/time.h>  //  Points to Zephyr toolchain posix time implementation
+#else
 #include <time.h>
+#endif // ZEPHYR_VERSION_CODE >= ZEPHYR_VERSION(3, 1, 0)
+#else
+#include <time.h>
+#endif  //  defined(__ZEPHYR__)
 #include <unistd.h>
 
 #include "./common.h"
@@ -39,7 +49,7 @@ extern "C"
 // This id an appropriate check for clock_gettime() according to:
 //   http://man7.org/linux/man-pages/man2/clock_gettime.2.html
 # if !defined(_POSIX_TIMERS) || !_POSIX_TIMERS
-#  error no monotonic clock function available
+#  warning no monotonic clock function available
 # endif  // !defined(_POSIX_TIMERS) || !_POSIX_TIMERS
 #endif  // !defined(__MACH__)
 
