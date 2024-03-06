@@ -19,6 +19,7 @@ extern "C"
 
 #include <errno.h>
 #include <string.h>
+#include <strings.h>
 
 #include "rcutils/strcasecmp.h"
 
