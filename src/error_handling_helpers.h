@@ -104,9 +104,6 @@ __rcutils_reverse_str(char * string_in, size_t string_len)
     string_in[j] = c;
   }
 }
-#endif
-
-#if !defined(RCUTILS_AVOID_DYNAMIC_ALLOCATION)
 
 // do not use externally, internal function which is only to be used by error_handling.c
 static
