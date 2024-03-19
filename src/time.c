@@ -52,6 +52,13 @@ rcutils_time_point_value_as_date_string(
   char * str,
   size_t str_size)
 {
+#ifdef RCUTILS_MICROROS
+    (void)time_point;
+    (void)str;
+    (void)str_size;
+
+    return RCUTILS_RET_ERROR;
+#else
   RCUTILS_CHECK_ARGUMENT_FOR_NULL(time_point, RCUTILS_RET_INVALID_ARGUMENT);
   RCUTILS_CHECK_ARGUMENT_FOR_NULL(str, RCUTILS_RET_INVALID_ARGUMENT);
   if (0 == str_size) {
@@ -99,6 +106,7 @@ rcutils_time_point_value_as_date_string(
   }
 
   return RCUTILS_RET_OK;
+#endif // RCUTILS_MICROROS
 }
 
 rcutils_ret_t
