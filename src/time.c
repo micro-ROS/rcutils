@@ -28,6 +28,11 @@ extern "C"
 #include "rcutils/error_handling.h"
 #include "rcutils/snprintf.h"
 
+// Define PRId64 for platforms that don't have it
+#ifndef PRId64
+#define PRId64 "lld"
+#endif
+
 rcutils_ret_t
 rcutils_time_point_value_as_nanoseconds_string(
   const rcutils_time_point_value_t * time_point,
