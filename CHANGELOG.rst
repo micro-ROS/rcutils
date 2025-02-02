@@ -2,8 +2,8 @@
 Changelog for package rcutils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+6.9.4 (2025-02-02)
+------------------
 * Cleanup error handling in rcutils. (`#485 <https://github.com/ros2/rcutils/issues/485>`_)
 * Remove CODEOWNERS and mirror-rolling-to-master workflow. (`#483 <https://github.com/ros2/rcutils/issues/483>`_)
 * Contributors: Chris Lalancette
