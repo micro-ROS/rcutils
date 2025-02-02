@@ -2,6 +2,12 @@
 Changelog for package rcutils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Cleanup error handling in rcutils. (`#485 <https://github.com/ros2/rcutils/issues/485>`_)
+* Remove CODEOWNERS and mirror-rolling-to-master workflow. (`#483 <https://github.com/ros2/rcutils/issues/483>`_)
+* Contributors: Chris Lalancette
+
 6.9.3 (2024-10-03)
 ------------------
 * Fix setting allocator to NULL. (`#478 <https://github.com/ros2/rcutils/issues/478>`_)
