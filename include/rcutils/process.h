@@ -23,6 +23,13 @@ extern "C"
 #endif
 
 #if defined _WIN32 || defined __CYGWIN__
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 // When building with MSVC 19.28.29333.0 on Windows 10 (as of 2020-11-11),
 // there appears to be a problem with winbase.h (which is included by
 // Windows.h). In particular, warnings of the form:
