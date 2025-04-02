@@ -2,6 +2,14 @@
 Changelog for package rcutils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+6.9.5 (2025-04-02)
+------------------
+* Handle spaces in start_process arguments on Windows (`#494 <https://github.com/ros2/rcutils/issues/494>`_)
+* Add utility functions for invoking a subprocess (`#491 <https://github.com/ros2/rcutils/issues/491>`_) (`#492 <https://github.com/ros2/rcutils/issues/492>`_)
+* Add rcutils_join function for concatenating strings (`#490 <https://github.com/ros2/rcutils/issues/490>`_)
+* Switch to ament_cmake_ros_core package (`#489 <https://github.com/ros2/rcutils/issues/489>`_)
+* Contributors: Alejandro Hernández Cordero, Michael Carroll, Scott K Logan
+
 6.9.4 (2025-02-02)
 ------------------
 * Cleanup error handling in rcutils. (`#485 <https://github.com/ros2/rcutils/issues/485>`_)
