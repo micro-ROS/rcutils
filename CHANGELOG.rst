@@ -2,6 +2,9 @@
 Changelog for package rcutils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+6.10.0 (2025-04-24)
+-------------------
+
 6.9.5 (2025-04-02)
 ------------------
 * Handle spaces in start_process arguments on Windows (`#494 <https://github.com/ros2/rcutils/issues/494>`_)
