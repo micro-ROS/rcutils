@@ -2,6 +2,13 @@
 Changelog for package rcutils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+6.10.1 (2025-05-30)
+-------------------
+* use getenv_s instead of getenv for Windows. (`#499 <https://github.com/ros2/rcutils/issues/499>`_)
+* Make linters happy
+* Clean memory in test_process.cpp (`#495 <https://github.com/ros2/rcutils/issues/495>`_)
+* Contributors: Alejandro Hernández Cordero, Tomoya Fujita
+
 6.10.0 (2025-04-24)
 -------------------
 
