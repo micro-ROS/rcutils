@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 3.20)
 
 project(rcutils)
 
+option(RCUTILS_NO_THREAD_SUPPORT "Disable thread support." OFF)
+option(RCUTILS_NO_FILESYSTEM "Disable filesystem usage." OFF)
+option(RCUTILS_AVOID_DYNAMIC_ALLOCATION "Disable dynamic allocations." OFF)
+option(RCUTILS_NO_64_ATOMIC "Enable alternative support for 64 bits atomic operations in platforms with no native support." OFF)
+option(RCUTILS_MICROROS "Flag for building micro-ROS." ON)
+
 include(CheckLibraryExists)
 
 find_package(ament_cmake REQUIRED)
@@ -17,7 +23,7 @@ if(UNIX AND NOT APPLE)
   endif()
 endif()
 
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+if(NOT RCUTILS_MICROROS AND (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
   # enables building a static library but later link it into a dynamic library
   add_compile_options(-fPIC)
 endif()
@@ -66,6 +72,7 @@ set(rcutils_sources
   src/time.c
   ${time_impl_c}
   src/uint8_array.c
+  $<$<BOOL:${RCUTILS_NO_64_ATOMIC}>:src/atomic_64bits.c>
 )
 set_source_files_properties(
   ${rcutils_sources}
@@ -76,6 +83,7 @@ add_library(
   ${rcutils_sources})
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 
 # Causes the visibility macros to use dllexport rather than dllimport,
@@ -87,9 +95,17 @@ if(BUILD_TESTING AND NOT RCUTILS_DISABLE_FAULT_INJECTION)
 endif()
 
 target_link_libraries(${PROJECT_NAME}
-  ${CMAKE_DL_LIBS}
   ament_cmake_ros_core::ament_ros_defaults
 )
+
+configure_file(
+    "${PROJECT_SOURCE_DIR}/include/rcutils/configuration_flags.h.in"
+    "${PROJECT_BINARY_DIR}/include/rcutils/configuration_flags.h"
+)
+
+if(NOT RCUTILS_NO_FILESYSTEM)
+  target_link_libraries(${PROJECT_NAME} ${CMAKE_DL_LIBS})
+endif()
 
 check_library_exists(atomic __atomic_load_8 "" HAVE_LIBATOMICS)
 
@@ -162,20 +178,22 @@ if(BUILD_TESTING)
     TIMEOUT 10
   )
 
-  ament_add_gmock(test_logging_macros test/test_logging_macros.cpp)
-  target_link_libraries(test_logging_macros
-    ${PROJECT_NAME}
-    ament_cmake_ros_core::ament_ros_defaults
-  )
+  if(NOT RCUTILS_MICROROS)
+    ament_add_gmock(test_logging_macros test/test_logging_macros.cpp)
+    target_link_libraries(test_logging_macros
+      ${PROJECT_NAME}
+      ament_cmake_ros_core::ament_ros_defaults
+    )
 
-  add_executable(test_logging_macros_c test/test_logging_macros.c)
-  target_link_libraries(test_logging_macros_c
-    ${PROJECT_NAME}
-    ament_cmake_ros_core::ament_ros_defaults
-  )
-  ament_add_test(test_logging_macros_c
-    COMMAND "$<TARGET_FILE:test_logging_macros_c>"
-    GENERATE_RESULT_FOR_RETURN_CODE_ZERO)
+    add_executable(test_logging_macros_c test/test_logging_macros.c)
+    target_link_libraries(test_logging_macros_c
+      ${PROJECT_NAME}
+      ament_cmake_ros_core::ament_ros_defaults
+    )
+    ament_add_test(test_logging_macros_c
+      COMMAND "$<TARGET_FILE:test_logging_macros_c>"
+      GENERATE_RESULT_FOR_RETURN_CODE_ZERO)
+  endif()
 
   set(SKIP_MEMORY_TOOLS_TEST "")
   if(NOT memory_tools_is_available)
@@ -637,15 +655,17 @@ if(BUILD_TESTING)
     )
   endif()
 
-  ament_add_gtest(test_logging_enable_for
-    test/test_logging_enable_for.cpp
-  )
-  if(TARGET test_logging_enable_for)
-    target_link_libraries(test_logging_enable_for
-      ${PROJECT_NAME}
-      osrf_testing_tools_cpp::memory_tools
-      ament_cmake_ros_core::ament_ros_defaults
+  if(NOT RCUTILS_MICROROS)
+    ament_add_gtest(test_logging_enable_for
+      test/test_logging_enable_for.cpp
     )
+    if(TARGET test_logging_enable_for)
+      target_link_libraries(test_logging_enable_for
+        ${PROJECT_NAME}
+        osrf_testing_tools_cpp::memory_tools
+        ament_cmake_ros_core::ament_ros_defaults
+      )
+    endif()
   endif()
 
   ament_add_gtest(test_logging_console_output_handler
@@ -696,5 +716,5 @@ ament_export_dependencies(ament_cmake ament_cmake_ros_core)
 ament_package()
 
 install(
-  DIRECTORY include/
+  DIRECTORY include/ ${CMAKE_CURRENT_BINARY_DIR}/include/
   DESTINATION include/${PROJECT_NAME})

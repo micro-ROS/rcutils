@@ -338,6 +338,7 @@ TEST_F(TestTimeFixture, test_rcutils_time_point_value_as_nanoseconds_string) {
 }
 
 // Tests the rcutils_time_point_value_as_date_string() function.
+#ifndef RCUTILS_MICROROS
 TEST_F(TestTimeFixture, test_rcutils_time_point_value_as_date_string) {
   rcutils_ret_t ret;
   rcutils_time_point_value_t timepoint;
@@ -376,6 +377,7 @@ TEST_F(TestTimeFixture, test_rcutils_time_point_value_as_date_string) {
   EXPECT_EQ(RCUTILS_RET_OK, ret) << rcutils_get_error_string().str;
   EXPECT_STREQ(test_str, buffer);
 }
+#endif  // RCUTILS_MICROROS
 
 // Tests the rcutils_time_point_value_as_seconds_string() function.
 TEST_F(TestTimeFixture, test_rcutils_time_point_value_as_seconds_string) {
