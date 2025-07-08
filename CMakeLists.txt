@@ -555,7 +555,10 @@ endif()
 
 # Export old-style CMake variables
 ament_export_include_directories("include/${PROJECT_NAME}")
-ament_export_libraries(${PROJECT_NAME} ${CMAKE_DL_LIBS})
+
+if(NOT RCUTILS_NO_FILESYSTEM)
+  ament_export_libraries(${PROJECT_NAME} ${CMAKE_DL_LIBS})
+endif()
 
 # Export modern CMake targets
 ament_export_targets(${PROJECT_NAME})
