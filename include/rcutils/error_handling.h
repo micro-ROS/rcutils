@@ -39,7 +39,7 @@ extern "C"
 #include "rcutils/visibility_control.h"
 #include "rcutils/configuration_flags.h"
 
-#ifndef(RCUTILS_NO_FILESYSTEM)
+#ifndef RCUTILS_NO_FILESYSTEM
 /// Write the given msg out to stderr, limiting the buffer size in the `fwrite`.
 /**
  * This ensures that there is an upper bound to a buffer overrun if `msg` is
