@@ -292,7 +292,7 @@ if(BUILD_TESTING)
   )
   if(TARGET test_error_handling_helpers)
     target_include_directories(test_error_handling_helpers PUBLIC include)
-    target_link_libraries(test_error_handling_helpers osrf_testing_tools_cpp::memory_tools)
+    target_link_libraries(test_error_handling_helpers ${PROJECT_NAME} osrf_testing_tools_cpp::memory_tools)
   endif()
 
   ament_add_gtest(test_split
