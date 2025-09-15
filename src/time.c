@@ -72,7 +72,7 @@ rcutils_time_point_value_as_date_string(
   }
 
   time_t now_t = (time_t)(seconds);
-  struct tm ptm = {.tm_year = 0, .tm_mday = 0};
+  struct tm ptm = {};
 #ifdef _WIN32
   if (localtime_s(&ptm, &now_t) != 0) {
     RCUTILS_SET_ERROR_MSG("failed to get localtime");
