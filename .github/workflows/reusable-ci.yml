@@ -29,6 +29,10 @@ jobs:
       image: ${{ inputs.docker-image }}
     steps:
 
+    - run: |
+        apt-get update && apt-get install -y git
+      shell: bash
+
     - name: Sync repository
       uses: actions/checkout@v5
       with:
