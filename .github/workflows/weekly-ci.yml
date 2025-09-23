@@ -1,9 +1,10 @@
-name: rcutils nightly CI (all distributions)
+name: rcutils weekly CI (all distributions)
 
 on:
   schedule:
-    # Run once per day to detect broken dependencies.
-    - cron: '59 23 * * *'
+    # Run once per week to detect broken dependencies.
+    - cron: '59 23 * * 0'
+  workflow_dispatch:
 
 jobs:
   humble-ci:
