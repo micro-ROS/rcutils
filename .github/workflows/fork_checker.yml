@@ -14,7 +14,11 @@ jobs:
         strategy:
           fail-fast: false
           matrix:
+<<<<<<< HEAD
             branches: [galactic, humble, jazzy, rolling]
+=======
+            branches: [humble, jazzy, kilted, rolling]
+>>>>>>> 8f32223 (Update CI (#43))
         steps:
           - name: Check
             id: check
