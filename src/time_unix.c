@@ -33,8 +33,11 @@ extern "C"
 
 #if defined(__ZEPHYR__)
 #include <version.h>
-#if ZEPHYR_VERSION_CODE >= ZEPHYR_VERSION(3, 1, 0)
+#if (ZEPHYR_VERSION_CODE >= ZEPHYR_VERSION(3, 1, 0)) &&                        \
+    (ZEPHYR_VERSION_CODE < ZEPHYR_VERSION(4, 2, 0))
 #include <zephyr/posix/time.h>  //  Points to Zephyr toolchain posix time implementation
+#elif ZEPHYR_VERSION_CODE >= ZEPHYR_VERSION(4, 2, 0)
+#include <zephyr/posix/sys/time.h> //  Points to Zephyr toolchain posix time implementation
 #else
 #include <time.h>
 #endif // ZEPHYR_VERSION_CODE >= ZEPHYR_VERSION(3, 1, 0)
