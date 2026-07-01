@@ -4,6 +4,7 @@ project(rcutils)
 
 option(RCUTILS_NO_THREAD_SUPPORT "Disable thread support." OFF)
 option(RCUTILS_NO_FILESYSTEM "Disable filesystem usage." OFF)
+option(RCUTILS_NO_PROCESS_SUPPORT "Disable process support." OFF)
 option(RCUTILS_AVOID_DYNAMIC_ALLOCATION "Disable dynamic allocations." OFF)
 option(RCUTILS_NO_64_ATOMIC "Enable alternative support for 64 bits atomic operations in platforms with no native support." OFF)
 option(RCUTILS_MICROROS "Flag for building micro-ROS." ON)
@@ -517,14 +518,16 @@ if(BUILD_TESTING)
     target_link_libraries(test_cmdline_parser ${PROJECT_NAME})
   endif()
 
-  ament_add_gtest(test_process
-    test/test_process.cpp
-  )
-  if(TARGET test_process)
-    target_link_libraries(test_process ${PROJECT_NAME})
-    target_compile_definitions(test_process PRIVATE
-      "CMAKE_COMMAND=${CMAKE_COMMAND}")
-    file(TOUCH "${CMAKE_CURRENT_BINARY_DIR}/file with space.txt")
+  if(NOT RCUTILS_NO_PROCESS_SUPPORT)
+    ament_add_gtest(test_process
+      test/test_process.cpp
+    )
+    if(TARGET test_process)
+      target_link_libraries(test_process ${PROJECT_NAME})
+      target_compile_definitions(test_process PRIVATE
+        "CMAKE_COMMAND=${CMAKE_COMMAND}")
+      file(TOUCH "${CMAKE_CURRENT_BINARY_DIR}/file with space.txt")
+    endif()
   endif()
 
   ament_add_gtest(test_logging_custom_env test/test_logging_custom_env.cpp
