@@ -8,6 +8,7 @@ extern "C"
 #endif
 
 #cmakedefine RCUTILS_NO_FILESYSTEM
+#cmakedefine RCUTILS_NO_PROCESS_SUPPORT
 #cmakedefine RCUTILS_AVOID_DYNAMIC_ALLOCATION
 #cmakedefine RCUTILS_NO_THREAD_SUPPORT
 #cmakedefine RCUTILS_MICROROS
