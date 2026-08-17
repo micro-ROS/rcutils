@@ -794,6 +794,12 @@ rcutils_ret_t rcutils_logging_format_message(
 # define COLOR_GREEN 2
 # define COLOR_YELLOW 6
 # define IS_STREAM_A_TTY(stream) (_isatty(_fileno(stream)) != 0)
+#elif defined(__ZEPHYR__)
+# define COLOR_NORMAL "\033[0m"
+# define COLOR_RED "\033[31m"
+# define COLOR_GREEN "\033[32m"
+# define COLOR_YELLOW "\033[33m"
+# define IS_STREAM_A_TTY(stream) (0)
 #else
 # define COLOR_NORMAL "\033[0m"
 # define COLOR_RED "\033[31m"
