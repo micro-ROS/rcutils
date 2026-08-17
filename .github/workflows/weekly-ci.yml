@@ -28,8 +28,6 @@ jobs:
       os: ubuntu-24.04
       docker-image: ubuntu:noble
       ros-distribution: kilted
-<<<<<<< HEAD
-=======
   lyrical-ci:
     uses: ./.github/workflows/reusable-ci.yml
     with:
@@ -37,7 +35,6 @@ jobs:
       os: ubuntu-26.04
       docker-image: ubuntu:resolute
       ros-distribution: lyrical
->>>>>>> 1d8f9b9 (Update CI (#51))
   rolling-ci:
     uses: ./.github/workflows/reusable-ci.yml
     with:
