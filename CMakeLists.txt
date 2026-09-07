@@ -1,6 +1,13 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.12)
 
 project(rcutils)
+
+option(RCUTILS_NO_THREAD_SUPPORT "Disable thread support." OFF)
+option(RCUTILS_NO_FILESYSTEM "Disable filesystem usage." OFF)
+option(RCUTILS_NO_PROCESS_SUPPORT "Disable process support." OFF)
+option(RCUTILS_AVOID_DYNAMIC_ALLOCATION "Disable dynamic allocations." OFF)
+option(RCUTILS_NO_64_ATOMIC "Enable alternative support for 64 bits atomic operations in platforms with no native support." OFF)
+option(RCUTILS_MICROROS "Flag for building micro-ROS." ON)
 
 include(CheckLibraryExists)
 
@@ -19,7 +26,7 @@ if(UNIX AND NOT APPLE)
   endif()
 endif()
 
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+if(NOT RCUTILS_MICROROS AND (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
   # enables building a static library but later link it into a dynamic library
   add_compile_options(-fPIC)
 endif()
@@ -68,6 +75,7 @@ set(rcutils_sources
   src/time.c
   ${time_impl_c}
   src/uint8_array.c
+  $<$<BOOL:${RCUTILS_NO_64_ATOMIC}>:src/atomic_64bits.c>
 )
 set_source_files_properties(
   ${rcutils_sources}
@@ -78,6 +86,7 @@ add_library(
   ${rcutils_sources})
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 
 # Causes the visibility macros to use dllexport rather than dllimport,
@@ -88,14 +97,20 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC __STDC_WANT_LIB_EXT1__=1)
 if(BUILD_TESTING AND NOT RCUTILS_DISABLE_FAULT_INJECTION)
   target_compile_definitions(${PROJECT_NAME} PUBLIC RCUTILS_ENABLE_FAULT_INJECTION)
 endif()
+configure_file(
+    "${PROJECT_SOURCE_DIR}/include/rcutils/configuration_flags.h.in"
+    "${PROJECT_BINARY_DIR}/include/rcutils/configuration_flags.h"
+)
 
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
-    ${CMAKE_DL_LIBS}
     ament_cmake_ros_core::ament_ros_defaults
   PRIVATE
     Threads::Threads
 )
+if(NOT RCUTILS_NO_FILESYSTEM)
+  target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS})
+endif()
 
 check_library_exists(atomic __atomic_load_8 "" HAVE_LIBATOMICS)
 
@@ -556,17 +571,19 @@ if(BUILD_TESTING)
     )
   endif()
 
-  ament_add_gtest(test_process
-    test/test_process.cpp
-  )
-  if(TARGET test_process)
-    target_link_libraries(test_process
-      ${PROJECT_NAME}
-      ament_cmake_ros_core::ament_ros_defaults
+  if(NOT RCUTILS_NO_PROCESS_SUPPORT)
+    ament_add_gtest(test_process
+      test/test_process.cpp
     )
-    target_compile_definitions(test_process PRIVATE
-      "CMAKE_COMMAND=${CMAKE_COMMAND}")
-    file(TOUCH "${CMAKE_CURRENT_BINARY_DIR}/file with space.txt")
+    if(TARGET test_process)
+      target_link_libraries(test_process
+        ${PROJECT_NAME}
+        ament_cmake_ros_core::ament_ros_defaults
+      )
+      target_compile_definitions(test_process PRIVATE
+        "CMAKE_COMMAND=${CMAKE_COMMAND}")
+      file(TOUCH "${CMAKE_CURRENT_BINARY_DIR}/file with space.txt")
+    endif()
   endif()
 
   ament_add_gtest(test_logging_custom_env test/test_logging_custom_env.cpp
@@ -703,5 +720,5 @@ ament_export_dependencies(ament_cmake ament_cmake_ros_core)
 ament_package()
 
 install(
-  DIRECTORY include/
+  DIRECTORY include/ ${CMAKE_CURRENT_BINARY_DIR}/include/
   DESTINATION include/${PROJECT_NAME})
