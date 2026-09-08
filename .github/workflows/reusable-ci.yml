@@ -1,0 +1,54 @@
+name: Reusable rcutils CI
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        description: "The rcutils branch to build. Leave unset for push and pull_request."
+        required: false
+        default: ""
+        type: string
+      os:
+        description: "The OS to use for the workflow"
+        required: true
+        type: string
+      docker-image:
+        description: "The docker image to use for the workflow"
+        required: true
+        type: string
+      ros-distribution:
+        description: "The ROS distribution to use for the workflow"
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ${{ inputs.os }}
+    strategy:
+      fail-fast: false
+    container:
+      image: ${{ inputs.docker-image }}
+    steps:
+
+    - run: |
+        apt-get update && apt-get install -y git
+      shell: bash
+
+    - name: Setup ROS 2
+      uses: ros-tooling/setup-ros@0.7.19
+      with:
+        required-ros-distributions: ${{ inputs.ros-distribution }}
+
+    - name : Download and install rcutils-dependencies
+      run: |
+        apt-get install ros-${{ inputs.ros-distribution }}-mimick-vendor
+        apt-get -y install ros-${{ inputs.ros-distribution }}-performance-test-fixture
+
+    # This action clones the repository itself, so no checkout step is needed.
+    # When ref is empty it uses the branch that triggered the run.
+    - uses : ros-tooling/action-ros-ci@0.4.8
+      with:
+        package-name: "rcutils"
+        target-ros2-distro: ${{ inputs.ros-distribution }}
+        ref: ${{ inputs.branch }}
+        skip-tests: true
