@@ -13,6 +13,13 @@ include(CheckLibraryExists)
 
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_ros_core REQUIRED)
+<<<<<<< HEAD
+=======
+if (NOT RCUTILS_NO_THREAD_SUPPORT)
+  set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+  find_package(Threads REQUIRED)
+endif()
+>>>>>>> 0d06209 (Fix thread issues from upstream (#56))
 
 if(UNIX AND NOT APPLE)
   include(cmake/check_c_compiler_uses_glibc.cmake)
@@ -45,7 +52,7 @@ endif()
 set(rcutils_sources
   src/allocator.c
   src/array_list.c
-  src/base64.c
+  $<$<NOT:$<BOOL:${RCUTILS_MICROROS}>>:src/base64.c>
   src/char_array.c
   src/cmdline_parser.c
   src/env.c
@@ -100,11 +107,19 @@ configure_file(
 )
 
 target_link_libraries(${PROJECT_NAME}
+<<<<<<< HEAD
   ${CMAKE_DL_LIBS}
   ament_cmake_ros_core::ament_ros_defaults
+=======
+  PUBLIC
+    ament_cmake_ros_core::ament_ros_defaults
+>>>>>>> 0d06209 (Fix thread issues from upstream (#56))
 )
 if(NOT RCUTILS_NO_FILESYSTEM)
   target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS})
+endif()
+if (NOT RCUTILS_NO_THREAD_SUPPORT)
+  target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 endif()
 
 check_library_exists(atomic __atomic_load_8 "" HAVE_LIBATOMICS)
@@ -694,11 +709,13 @@ if(BUILD_TESTING)
     target_link_libraries(benchmark_err_handle ${PROJECT_NAME} ament_cmake_ros_core::ament_ros_defaults)
   endif()
 
-  ament_add_gtest(test_base64
-    test/test_base64.cpp
-  )
-  if(TARGET test_base64)
-    target_link_libraries(test_base64 ${PROJECT_NAME} ament_cmake_ros_core::ament_ros_defaults)
+  if(NOT RCUTILS_MICROROS)
+    ament_add_gtest(test_base64
+      test/test_base64.cpp
+    )
+    if(TARGET test_base64)
+      target_link_libraries(test_base64 ${PROJECT_NAME} ament_cmake_ros_core::ament_ros_defaults)
+    endif()
   endif()
 endif()
 
