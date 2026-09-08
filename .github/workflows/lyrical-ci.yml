@@ -1,0 +1,15 @@
+name: rcutils CI Lyrical
+
+on:
+  push:
+    branches: [ lyrical ]
+  pull_request:
+    branches: [ lyrical ]
+
+jobs:
+  lyrical-ci:
+    uses: ./.github/workflows/reusable-ci.yml
+    with:
+      os: ubuntu-26.04
+      docker-image: ubuntu:resolute
+      ros-distribution: lyrical
