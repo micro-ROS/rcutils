@@ -69,17 +69,32 @@ rcutils_get_zero_initialized_allocator(void)
   return zero_allocator;
 }
 
+static rcutils_allocator_t default_allocator = {
+  .allocate = __default_allocate,
+  .deallocate = __default_deallocate,
+  .reallocate = __default_reallocate,
+  .zero_allocate = __default_zero_allocate,
+  .state = NULL,
+};
+
 rcutils_allocator_t
 rcutils_get_default_allocator(void)
 {
-  static rcutils_allocator_t default_allocator = {
-    .allocate = __default_allocate,
-    .deallocate = __default_deallocate,
-    .reallocate = __default_reallocate,
-    .zero_allocate = __default_zero_allocate,
-    .state = NULL,
-  };
   return default_allocator;
+}
+
+bool
+rcutils_set_default_allocator(rcutils_allocator_t * allocator){
+  if (rcutils_allocator_is_valid(allocator))
+  {
+    default_allocator.allocate = allocator->allocate;
+    default_allocator.deallocate = allocator->deallocate;
+    default_allocator.reallocate = allocator->reallocate;
+    default_allocator.zero_allocate = allocator->zero_allocate;
+    default_allocator.state = NULL;
+    return true;
+  }
+  return false;
 }
 
 bool
