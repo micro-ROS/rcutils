@@ -1,0 +1,15 @@
+name: rcutils CI Humble
+
+on:
+  push:
+    branches: [ humble ]
+  pull_request:
+    branches: [ humble ]
+
+jobs:
+  humble-ci:
+    uses: ./.github/workflows/reusable-ci.yml
+    with:
+      os: ubuntu-22.04
+      docker-image: ubuntu:jammy
+      ros-distribution: humble
