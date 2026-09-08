@@ -10,7 +10,6 @@ jobs:
   lyrical-ci:
     uses: ./.github/workflows/reusable-ci.yml
     with:
-      branch: ${{ github.ref }}
       os: ubuntu-26.04
       docker-image: ubuntu:resolute
       ros-distribution: lyrical
