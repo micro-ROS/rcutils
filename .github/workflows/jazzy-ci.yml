@@ -1,0 +1,15 @@
+name: rcutils CI Jazzy
+
+on:
+  push:
+    branches: [ jazzy ]
+  pull_request:
+    branches: [ jazzy ]
+
+jobs:
+  jazzy-ci:
+    uses: ./.github/workflows/reusable-ci.yml
+    with:
+      os: ubuntu-24.04
+      docker-image: ubuntu:noble
+      ros-distribution: jazzy
