@@ -103,7 +103,7 @@ target_link_libraries(${PROJECT_NAME}
   ament_cmake_ros_core::ament_ros_defaults
 )
 if(NOT RCUTILS_NO_FILESYSTEM)
-  target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS})
+  target_link_libraries(${PROJECT_NAME} ${CMAKE_DL_LIBS})
 endif()
 
 check_library_exists(atomic __atomic_load_8 "" HAVE_LIBATOMICS)
