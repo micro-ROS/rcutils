@@ -13,13 +13,6 @@ include(CheckLibraryExists)
 
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_ros_core REQUIRED)
-<<<<<<< HEAD
-=======
-if (NOT RCUTILS_NO_THREAD_SUPPORT)
-  set(THREADS_PREFER_PTHREAD_FLAG TRUE)
-  find_package(Threads REQUIRED)
-endif()
->>>>>>> 0d06209 (Fix thread issues from upstream (#56))
 
 if(UNIX AND NOT APPLE)
   include(cmake/check_c_compiler_uses_glibc.cmake)
@@ -107,19 +100,10 @@ configure_file(
 )
 
 target_link_libraries(${PROJECT_NAME}
-<<<<<<< HEAD
-  ${CMAKE_DL_LIBS}
   ament_cmake_ros_core::ament_ros_defaults
-=======
-  PUBLIC
-    ament_cmake_ros_core::ament_ros_defaults
->>>>>>> 0d06209 (Fix thread issues from upstream (#56))
 )
 if(NOT RCUTILS_NO_FILESYSTEM)
   target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS})
-endif()
-if (NOT RCUTILS_NO_THREAD_SUPPORT)
-  target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 endif()
 
 check_library_exists(atomic __atomic_load_8 "" HAVE_LIBATOMICS)
