@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.uml": "plantuml",
+        "*.in": "c"
+    }
+}
