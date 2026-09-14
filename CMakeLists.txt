@@ -712,6 +712,11 @@ ament_export_targets(${PROJECT_NAME})
 
 ament_export_dependencies(ament_cmake ament_cmake_ros_core)
 
+if (NOT RCUTILS_NO_THREAD_SUPPORT)
+  # Needed because micro-ROS is built statically
+  ament_export_dependencies(Threads)
+endif()
+
 ament_package()
 
 install(
