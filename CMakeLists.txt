@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 3.12)
 
 project(rcutils)
 
+option(RCUTILS_NO_THREAD_SUPPORT "Disable thread support." OFF)
+option(RCUTILS_NO_FILESYSTEM "Disable filesystem usage." OFF)
+option(RCUTILS_AVOID_DYNAMIC_ALLOCATION "Disable dynamic allocations." OFF)
+option(RCUTILS_NO_64_ATOMIC "Enable alternative support for 64 bits atomic operations in platforms with no native support." OFF)
+option(RCUTILS_MICROROS "Flag for building micro-ROS." ON)
+
 # Default to C11
 if(NOT CMAKE_C_STANDARD)
   set(CMAKE_C_STANDARD 11)
@@ -30,7 +36,7 @@ if(UNIX AND NOT APPLE)
   endif()
 endif()
 
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+if(NOT RCUTILS_MICROROS AND (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
   # enables building a static library but later link it into a dynamic library
   add_compile_options(-fPIC)
 endif()
@@ -75,6 +81,7 @@ set(rcutils_sources
   src/time.c
   ${time_impl_c}
   src/uint8_array.c
+  $<$<BOOL:${RCUTILS_NO_64_ATOMIC}>:src/atomic_64bits.c>
 )
 set_source_files_properties(
   ${rcutils_sources}
@@ -129,8 +136,14 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE "RCUTILS_BUILDING_DLL")
 if(BUILD_TESTING AND NOT RCUTILS_DISABLE_FAULT_INJECTION)
   target_compile_definitions(${PROJECT_NAME} PUBLIC RCUTILS_ENABLE_FAULT_INJECTION)
 endif()
+configure_file(
+    "${PROJECT_SOURCE_DIR}/include/rcutils/configuration_flags.h.in"
+    "${PROJECT_BINARY_DIR}/include/rcutils/configuration_flags.h"
+)
 
-target_link_libraries(${PROJECT_NAME} ${CMAKE_DL_LIBS})
+if(NOT RCUTILS_NO_FILESYSTEM)
+  target_link_libraries(${PROJECT_NAME} ${CMAKE_DL_LIBS})
+endif()
 
 check_library_exists(atomic __atomic_load_8 "" HAVE_LIBATOMICS)
 
@@ -282,7 +295,7 @@ if(BUILD_TESTING)
   )
   if(TARGET test_error_handling_helpers)
     target_include_directories(test_error_handling_helpers PUBLIC include)
-    target_link_libraries(test_error_handling_helpers osrf_testing_tools_cpp::memory_tools)
+    target_link_libraries(test_error_handling_helpers ${PROJECT_NAME} osrf_testing_tools_cpp::memory_tools)
   endif()
 
   rcutils_custom_add_gtest(test_split
@@ -587,7 +600,10 @@ endif()
 
 # Export old-style CMake variables
 ament_export_include_directories("include/${PROJECT_NAME}")
-ament_export_libraries(${PROJECT_NAME} ${CMAKE_DL_LIBS})
+
+if(NOT RCUTILS_NO_FILESYSTEM)
+  ament_export_libraries(${PROJECT_NAME} ${CMAKE_DL_LIBS})
+endif()
 
 # Export modern CMake targets
 ament_export_targets(${PROJECT_NAME})
