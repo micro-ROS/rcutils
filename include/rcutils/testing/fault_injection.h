@@ -92,6 +92,8 @@ RCUTILS_PUBLIC
 void
 _rcutils_fault_injection_log(const char * file, int line, const char * action);
 
+#ifdef RCUTILS_ENABLE_FAULT_INJECTION
+
 /**
  * \def RCUTILS_FAULT_INJECTION_MAYBE_RETURN_ERROR
  * \brief This macro checks and decrements a static global variable atomic counter and returns
@@ -209,6 +211,17 @@ _rcutils_fault_injection_log(const char * file, int line, const char * action);
     code; \
     rcutils_fault_injection_set_count(no_fault_injection_count); \
   } while (0)
+
+#else
+
+// Mocks for micro-ROS when fault injection not enabled
+
+#define RCUTILS_FAULT_INJECTION_MAYBE_RETURN_ERROR(return_value_on_error)
+#define RCUTILS_FAULT_INJECTION_MAYBE_FAIL(failure_code)
+#define RCUTILS_FAULT_INJECTION_TEST(code)
+#define RCUTILS_NO_FAULT_INJECTION(code) 
+
+#endif
 
 #ifdef __cplusplus
 }
