@@ -17,6 +17,8 @@ extern "C"
 {
 #endif
 
+#include "rcutils/process.h"
+
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
@@ -36,14 +38,15 @@ extern "C"
 #pragma warning(pop)
 #else
 #include <libgen.h>
+#ifndef RCUTILS_NO_PROCESS_SUPPORT
 #include <sys/wait.h>
+#endif
 #include <unistd.h>
 #endif
 
 #include "rcutils/allocator.h"
 #include "rcutils/error_handling.h"
 #include "rcutils/join.h"
-#include "rcutils/process.h"
 #include "rcutils/strdup.h"
 
 int rcutils_get_pid(void)
@@ -63,7 +66,13 @@ char * rcutils_get_executable_name(rcutils_allocator_t allocator)
 #if defined __APPLE__ || defined __FreeBSD__ || (defined __ANDROID__ && __ANDROID_API__ >= 21)
   const char * appname = getprogname();
 #elif (defined __GNUC__ && !defined(__MINGW64__)) && !defined(__QNXNTO__) && !defined(__OHOS__)
-  const char * appname = program_invocation_name;
+  #if defined __linux__ || defined __linux || defined __gnu_linux__ || defined linux
+    const char * appname = program_invocation_name;
+  #else
+    // Some embedded OS compile with __GNUC__ but are not quite conformant with GNU-specific extensions.
+    // They may fake to have a GLIBC in their custom C library implementation.
+    const char * appname = "";
+  #endif
 #elif defined _WIN32 || defined __CYGWIN__
   char appname[MAX_PATH];
   int32_t size = GetModuleFileNameA(NULL, appname, MAX_PATH);
@@ -227,6 +236,12 @@ rcutils_start_process(
   const rcutils_string_array_t * args,
   rcutils_allocator_t * allocator)
 {
+#ifdef RCUTILS_NO_PROCESS_SUPPORT
+  (void)args;
+  (void)allocator;
+  RCUTILS_SET_ERROR_MSG("process support is disabled (RCUTILS_NO_PROCESS_SUPPORT)");
+  return NULL;
+#else
   RCUTILS_CHECK_ARGUMENT_FOR_NULL(args, NULL);
   RCUTILS_CHECK_ARGUMENT_FOR_NULL(allocator, NULL);
   if (args->size < 1) {
@@ -312,6 +327,7 @@ rcutils_start_process(
   allocator->deallocate(argv, &allocator->state);
   exit(127);
 #endif
+#endif  // RCUTILS_NO_PROCESS_SUPPORT
 }
 
 void
@@ -335,6 +351,12 @@ rcutils_process_close(rcutils_process_t * process)
 rcutils_ret_t
 rcutils_process_wait(const rcutils_process_t * process, int * exit_code)
 {
+#ifdef RCUTILS_NO_PROCESS_SUPPORT
+  (void)process;
+  (void)exit_code;
+  RCUTILS_SET_ERROR_MSG("process support is disabled (RCUTILS_NO_PROCESS_SUPPORT)");
+  return RCUTILS_RET_ERROR;
+#else
   RCUTILS_CHECK_ARGUMENT_FOR_NULL(process, RCUTILS_RET_INVALID_ARGUMENT);
 
 #if defined _WIN32 || defined __CYGWIN__
@@ -375,6 +397,7 @@ rcutils_process_wait(const rcutils_process_t * process, int * exit_code)
 #endif
 
   return RCUTILS_RET_OK;
+#endif  // RCUTILS_NO_PROCESS_SUPPORT
 }
 
 #ifdef __cplusplus
